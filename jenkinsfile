@@ -1,3 +1,5 @@
+Def Environment = 'Dev'
+
 pipeline{
 agent any
     
@@ -9,6 +11,11 @@ stage('SCM checkout')
 checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/in28minutes/JavaWebApplicationStepByStep.git']]])
 }
 }
+stage('Code Quality Analysis'){
+    steps{
+       //sh "mvn clean install"
+    }
+    
 
 stage('build'){
     steps{
