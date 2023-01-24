@@ -1,0 +1,29 @@
+//jenkins filedemo //
+pipeline{
+agent any
+    
+stages{
+
+stage('SCM checkout')
+{
+    steps{
+checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/in28minutes/JavaWebApplicationStepByStep.git']]])
+}
+}
+
+stage('build'){
+    steps{
+       sh "mvn clean install"
+    }
+    
+}
+
+//stage('Deploy'){
+  //  steps{
+    //   deploy adapters: [tomcat9(credentialsId: 'd1d9c776-88f0-490d-8914-a6af342286e0', path: '', url: 'http://192.168.1.9:8888/')], contextPath: 'in28Minutes-first-webapp-0.0.1-SNAPSHOT.war', war: '**/*.war'
+  //  }
+    
+// }
+
+}
+}
