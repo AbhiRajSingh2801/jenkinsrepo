@@ -21,8 +21,8 @@ stage('build'){
 stage('Docker Build and Tag') {
            steps {
               
-                sh 'docker build -t JavaWebApplicationStepByStep:latest .' 
-                sh 'docker tag JavaWebApplicationStepByStep kushwahabhi28/JavaWebApplicationStepByStep:latest'
+                sh 'docker build -t javawebapp .' 
+                sh 'docker tag javawebapp kushwahabhi28/javawebapp'
                 //sh 'docker tag JavaWebApplicationStepByStep kushwahabhi28/JavaWebApplicationStepByStep:$BUILD_NUMBER'
                
           }
@@ -32,7 +32,7 @@ stage('Docker Build and Tag') {
           
             steps {
         withDockerRegistry([ credentialsId: "dockerHub", url: "" ]) {
-          sh  'docker push kushwahabhi28/JavaWebApplicationStepByStep:latest'
+          sh  'docker push kushwahabhi28/javawebapp:latest'
         //  sh  'docker push kushwahabhi28/JavaWebApplicationStepByStep:$BUILD_NUMBER' 
         }
                   
@@ -43,14 +43,14 @@ stage('Docker Build and Tag') {
              
             steps 
    {
-                sh "docker run -d -p 8003:8080 kushwahabhi28/JavaWebApplicationStepByStep"
+                sh "docker run -d -p 8003:8080 kushwahabhi28/javawebapp"
  
             }
         }
  stage('Run Docker container on remote hosts') {
              
             steps {
-                sh "docker -H ssh://jenkins@172.31.28.25 run -d -p 8003:8080 kushwahabhi28/JavaWebApplicationStepByStep"
+                sh "docker -H ssh://jenkins@172.31.28.25 run -d -p 8003:8080 kushwahabhi28/javawebapp"
  
             }
         }
