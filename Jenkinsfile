@@ -21,7 +21,7 @@ stage('build'){
 stage('Docker Build and Tag') {
            steps {
               
-                sh 'docker build -t simplewebapp .' 
+                sh 'docker build -t simplewebapp/Dockerfile .' 
 				sh 'docker tag simplewebapp kushwahabhi28/simplewebapp'
                 //sh 'docker tag JavaWebApplicationStepByStep kushwahabhi28/JavaWebApplicationStepByStep:$BUILD_NUMBER'
                
