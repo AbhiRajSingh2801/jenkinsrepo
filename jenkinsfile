@@ -1,35 +1,63 @@
-Def Environment = 'Dev'
+pipeline {
+    agent any
 
-pipeline{
-agent any
-    
-stages{
-
-stage('SCM checkout')
-{
-    steps{
-checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/in28minutes/JavaWebApplicationStepByStep.git']]])
-}
-}
-stage('Code Quality Analysis'){
-    steps{
-       //sh "mvn clean install"
+    environment {
+        REPO_URL = 'https://github.com/bzdgn/docker-spring-boot-java-web-service-example.git' // Replace with your GitHub repo URL
+        IMAGE_NAME = 'your-docker-image'                          // Replace with your Docker image name
+        NAMESPACE = 'your-namespace'                              // Replace with your Kubernetes namespace
+        DEPLOYMENT_NAME = 'your-deployment'                       // Replace with your Kubernetes deployment name
+        SONARQUBE_SERVER = 'sonarqube-server'                     // Replace with your SonarQube server name
     }
-    
 
-stage('build'){
-    steps{
-       sh "mvn clean install"
+    stages {
+        stage('Clone Repository') {
+            steps {
+                echo 'Cloning the repository...'
+                git url: "${REPO_URL}", branch: 'main' // Replace 'main' with your branch name
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Running SonarQube analysis...'
+                withSonarQubeEnv("${SONARQUBE_SERVER}") {
+                    sh './gradlew sonarqube' // Replace with your build tool SonarQube command
+                }
+            }
+        }
+
+        stage('Build Java Code') {
+            steps {
+                echo 'Building Java code...'
+                sh './gradlew build' // Replace with your build tool (e.g., Maven: mvn clean package)
+            }
+        }
+
+        stage('Containerize Application') {
+            steps {
+                echo 'Building Docker image...'
+                sh '''
+                docker build -t ${IMAGE_NAME}:latest .
+                docker images | grep ${IMAGE_NAME}  # List images to verify
+                '''
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                echo 'Deploying application to Kubernetes...'
+                sh '''
+                kubectl set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${IMAGE_NAME}:latest --namespace=${NAMESPACE}
+                kubectl rollout status deployment/${DEPLOYMENT_NAME} --namespace=${NAMESPACE}
+                '''
+            }
+        }
     }
-    
-}
 
-//stage('Deploy'){
-  //  steps{
-    //   deploy adapters: [tomcat9(credentialsId: 'd1d9c776-88f0-490d-8914-a6af342286e0', path: '', url: 'http://192.168.1.9:8888/')], contextPath: 'in28Minutes-first-webapp-0.0.1-SNAPSHOT.war', war: '**/*.war'
-  //  }
-    
-// }
-
-}
+    post {
+        always {
+            echo 'Cleaning up workspace...'
+            cleanWs()
+        }
+    }
 }
