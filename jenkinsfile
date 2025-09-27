@@ -1,7 +1,7 @@
 pipeline {
     agent any
 // Auther : Ruchi/Abhi
-// Hey this is for testing fectch
+// Hey this is for testing pull
     environment {
         REPO_URL = 'https://github.com/bzdgn/docker-spring-boot-java-web-service-example.git' // Replace with your GitHub repo URL
         IMAGE_NAME = 'your-docker-image'                          // Replace with your Docker image name
